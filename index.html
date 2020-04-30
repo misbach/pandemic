@@ -17,7 +17,7 @@
 		<p>This data set shows the victims of the 1918 pandemic and their families in FamilySearch Family Tree.</p>
 
 		<div id="info-box"></div>
-		<div class="map" style="width: 600px; margin: auto;">
+		<div class="map" style="max-width: 600px; margin: auto;">
 			<svg id="us-map" preserveAspectRatio="xMinYMin meet" x="0px" y="0px" viewBox="174 100 959 593">
 				<sodipodi:namedview bordercolor="#666666" objecttolerance="10" pagecolor="#ffffff" borderopacity="1" gridtolerance="10" guidetolerance="10" inkscape:cx="509.19152" inkscape:cy="282.2353" inkscape:zoom="1.2137643" showgrid="false" id="namedview71" inkscape:current-layer="g5" inkscape:window-maximized="1" inkscape:window-y="-8" inkscape:window-x="-8" inkscape:pageopacity="0" inkscape:window-height="1017" inkscape:window-width="1920" inkscape:pageshadow="2">
 					</sodipodi:namedview>
@@ -83,6 +83,9 @@
 
 		<div class="results" style="display: none;">
 			<h3>Pandemic victims from <span class="state"></span></h3>
+			<div class="spinner-grow text-info" role="status" style="display: none;">
+				<span class="sr-only">Loading...</span>
+			</div>
 			<ul class="people"></ul>
 		</div>
 
@@ -106,6 +109,7 @@
 		});
 
 		$('path').click(function(e) {
+			$('.spinner-grow').show();
 			let id = e.target.id;
 			$('.results').show();
 			$('.state').text(id)
@@ -116,6 +120,7 @@
 				for (let i = 0; i < state.people.length; i++) {
 					$('.people').append('<li><a href="https://www.familysearch.org/tree/person/details/'+state.people[i].pid+'" target="_blank">'+state.people[i].name+'</a> ('+state.people[i].lifespan+') '+state.people[i].cod+'</li>');
 				}
+				$('.spinner-grow').hide();
 			});
 		});
 
