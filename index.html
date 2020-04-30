@@ -112,7 +112,7 @@
 			$('.people').empty();
 
 			// Get State's people
-			fetch("people/"+id+".json").then(rsp => rsp.json()).then(state => {
+			fetch("https://raw.githubusercontent.com/misbach/pandemic/master/people/"+id+".json").then(rsp => rsp.json()).then(state => {
 				for (let i = 0; i < state.people.length; i++) {
 					$('.people').append('<li><a href="https://www.familysearch.org/tree/person/details/'+state.people[i].pid+'" target="_blank">'+state.people[i].name+'</a> ('+state.people[i].lifespan+') '+state.people[i].cod+'</li>');
 				}
