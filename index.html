@@ -83,6 +83,16 @@
 
 		<div class="results" style="display: none;">
 			<h3>Pandemic victims from <span class="state"></span></h3>
+
+			<div class="form-row align-items-center">
+				<div class="col-auto">
+					<input type="text" class="form-control mb-2 query" placeholder="Jones">
+				</div>
+				<div class="col-auto">
+					<button class="btn btn-primary mb-2 search">Search</button>
+				</div>
+			</div>
+
 			<div class="spinner-grow text-info" role="status" style="display: none;">
 				<span class="sr-only">Loading...</span>
 			</div>
@@ -99,6 +109,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 	<script>
+		let people = null;
 		$("path, circle").hover(function(e) {
 			$('#info-box').css('display','block');
 			$('#info-box').html($(this).data('info'));
@@ -117,6 +128,7 @@
 
 			// Get State's people
 			fetch("people/"+id+".json").then(rsp => rsp.json()).then(state => {
+				people = state.people;
 				for (let i = 0; i < state.people.length; i++) {
 					$('.people').append('<li><a href="https://ancestors.familysearch.org/en/'+state.people[i].pid+'" target="_blank">'+state.people[i].name+'</a> ('+state.people[i].lifespan+') '+state.people[i].cod+'</li>');
 				}
@@ -137,6 +149,16 @@
 				return false;
 			});
 		}
+
+		// Search / Filter
+		$('.query').keyup(function() {
+			$('.people').empty();
+			let query = $('.query').val().toLowerCase();
+			if (query == "") query = " ";
+			for (let i = 0; i < people.length; i++) {
+				if (people[i].name.toLowerCase().indexOf(query) > 0) $('.people').append('<li><a href="https://ancestors.familysearch.org/en/'+people[i].pid+'" target="_blank">'+people[i].name+'</a> ('+people[i].lifespan+') '+people[i].cod+'</li>');
+			}
+		})
 	</script>
 </body>
 </html>
