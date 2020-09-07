@@ -7,9 +7,9 @@ const fetch = require('node-fetch');
 const Bottleneck = require("bottleneck/es5");
 
 const limiter = new Bottleneck( { maxConcurrent: 1, minTime: 500 } );
-const token = "67c0d34a-dce4-4b16-b160-377910b3829e-prod";
+const token = "114394cd-951a-40fc-ba09-173be6e47d0c-prod";
 
-fs.readFile('./byu/test.csv', async (err, data) => {
+fs.readFile('byu/UT.csv', async (err, data) => {
 	if (err) return console.error(err);
 
     let pids = await neatCsv(data);
@@ -23,12 +23,33 @@ fs.readFile('./byu/test.csv', async (err, data) => {
         .then(json => {
             pids[i].name = json.persons[0].display.name;
             pids[i].lifespan = json.persons[0].display.lifespan;
-            console.log(pids[i]);
-            persons.people.push(pids[i]);
+            if (json.persons[0].display.birthDate) pids[i].bDate = json.persons[0].display.birthDate;
+            if (json.persons[0].display.birthPlace) pids[i].bPlace = json.persons[0].display.birthPlace;
+            if (json.persons[0].display.deathDate) pids[i].dDate = json.persons[0].display.deathDate;
+            if (json.persons[0].display.deathPlace) pids[i].dPlace = json.persons[0].display.deathPlace;
 
-            // save json file
-            if (i == pids.length-1) fs.writeFileSync("persons.json", JSON.stringify(persons));
-        });
+            // Calc age
+            if (json.persons[0].display.birthDate && json.persons[0].display.deathDate) {
+                pids[i].age = parseInt((new Date(pids[i].dDate)- new Date(pids[i].bDate)) / (1000 * 60 * 60 * 24) / 365 | 0);
+            } 
 
+            (async () => {
+                // Get death lat/lon
+                if (pids[i].dPlace) {
+                    await fetch('https://api.familysearch.org/platform/places/search?q=name:"'+pids[i].dPlace+'"', { headers: { "Authorization": "Bearer "+token, "Accept": "Application/JSON" }})
+                    .then(response => response.json())
+                    .then(json => {
+                        pids[i].lat = json.entries[0].content.gedcomx.places[0].latitude;
+                        pids[i].lon = json.entries[0].content.gedcomx.places[0].longitude;
+                    });
+                }
+
+                console.log(pids[i].name, pids[i].age);
+                persons.people.push(pids[i]);
+
+                // save json file
+                if (i == pids.length-1) fs.writeFileSync("people/UT.json", JSON.stringify(persons));
+            })();
+         });
     };
 });

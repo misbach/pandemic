@@ -93,7 +93,18 @@
 			<div class="spinner-grow text-info" role="status" style="display: none;">
 				<span class="sr-only">Loading...</span>
 			</div>
-			<ul class="people"></ul>
+			<table class="table table-striped table-sm">
+				<thead>
+					<tr>
+						<th scope="col">Name</th>
+						<th scope="col">Cause</th>
+						<th scope="col">Birth Place</th>
+						<th scope="col">Birth Date</th>
+						<th scope="col">Age</th>
+					</tr>
+				</thead>
+				<tbody class="people"></tbody>
+			</table>
 		</div>
 
 	</div>
@@ -127,7 +138,7 @@
 			fetch("people/"+id+".json").then(rsp => rsp.json()).then(state => {
 				people = state.people;
 				for (let i = 0; i < state.people.length; i++) {
-					$('.people').append('<li><a href="https://ancestors.familysearch.org/en/'+state.people[i].pid+'" target="_blank">'+state.people[i].name+'</a> ('+state.people[i].lifespan+') '+state.people[i].cod+'</li>');
+					render(state.people[i]);
 				}
 				$('.spinner-grow').hide();
 			});
@@ -153,9 +164,20 @@
 			let query = $('.query').val().toLowerCase();
 			if (query == "") query = " ";
 			for (let i = 0; i < people.length; i++) {
-				if (people[i].name.toLowerCase().indexOf(query) > 0) $('.people').append('<li><a href="https://ancestors.familysearch.org/en/'+people[i].pid+'" target="_blank">'+people[i].name+'</a> ('+people[i].lifespan+') '+people[i].cod+'</li>');
+				if (people[i].name.toLowerCase().indexOf(query) > 0) render(people[i]);
 			}
-		})
+		});
+
+		// Render Person
+		function render(person) {
+			$('.people').append('<tr>\
+				<td><a href="https://ancestors.familysearch.org/en/'+person.pid+'" target="_blank">'+person.name+'</a></td>\
+				<td>'+person.cod+'</td>\
+				<td>'+person.bPlace+'</td>\
+				<td>'+person.bDate+'</td>\
+				<td>'+person.age+'</td>\
+				</tr>');
+		}
 	</script>
 </body>
 </html>
